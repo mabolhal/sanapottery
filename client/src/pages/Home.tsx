@@ -3,8 +3,8 @@ import { Link } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ArrowRight } from 'lucide-react';
-import heroImage from '@assets/generated_images/Artisan_pottery_hero_image_fdd32574.png';
-import artistImage from '@assets/generated_images/Artist_crafting_pottery_photo_335aa065.png';
+import heroImage from '@assets/generated_images/Artisan_pottery_hero_image_db75d4c0.png';
+import artistImage from '@assets/generated_images/Artist_crafting_pottery_photo_a806aad1.png';
 
 export default function Home() {
   const { t } = useTranslation();

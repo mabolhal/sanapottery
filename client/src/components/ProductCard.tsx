@@ -58,7 +58,7 @@ export function ProductCard({ product, onViewDetails }: ProductCardProps) {
           <p className="text-sm text-muted-foreground capitalize">{product.category}</p>
         </div>
         
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-2">
           <span className="text-xl font-medium" data-testid={`text-product-price-${product.id}`}>${product.price}</span>
           <Button
             size="sm"

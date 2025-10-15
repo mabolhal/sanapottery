@@ -27,7 +27,7 @@ import { apiRequest, queryClient } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 import { useForm } from 'react-hook-form';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import vaseImage from '@assets/generated_images/Terracotta_vase_product_photo_b417b98f.png';
+import vaseImage from '@assets/generated_images/Terracotta_vase_product_photo_88774a81.png';
 
 type ProductFormData = {
   nameEn: string;
