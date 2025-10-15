@@ -14,17 +14,17 @@
   --elevate-1: rgba(0,0,0, .03);
   --elevate-2: rgba(0,0,0, .08);
 
-  --background: 40 4% 98%;
+  --background: 40 8% 98%;
 
   --foreground: 30 15% 20%;
 
-  --border: 30 12% 88%;
+  --border: 30 15% 88%;
 
   --card: 0 0% 100%;
 
   --card-foreground: 30 15% 20%;
 
-  --card-border: 30 10% 92%;
+  --card-border: 30 12% 92%;
 
   --sidebar: 40 6% 96%;
 
@@ -60,9 +60,9 @@
 
   --muted-foreground: 30 10% 45%;
 
-  --accent: 40 10% 93%;
+  --accent: 160 30% 40%;
 
-  --accent-foreground: 30 15% 25%;
+  --accent-foreground: 0 0% 100%;
 
   --destructive: 0 65% 35%;
 
@@ -76,9 +76,9 @@
   --chart-4: 35 45% 50%;
   --chart-5: 280 30% 45%;
 
-  --font-sans: Inter, sans-serif;
-  --font-serif: Playfair Display, serif;
-  --font-mono: Menlo, monospace;
+  --font-sans: "Inter", sans-serif;
+  --font-serif: "Playfair Display", serif;
+  --font-mono: "Montserrat", sans-serif;
   --radius: .5rem; /* 8px */
   --shadow-2xs: 0px 1px 2px 0px hsl(30 15% 20% / 0.04);
   --shadow-xs: 0px 1px 3px 0px hsl(30 15% 20% / 0.08);
