@@ -65,7 +65,7 @@ export function Header() {
               }`}
               data-testid="link-home-logo"
             >
-              Artisan Pottery
+              Sana Pottery
             </h1>
           </Link>
 

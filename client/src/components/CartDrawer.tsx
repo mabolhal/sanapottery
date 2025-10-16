@@ -10,6 +10,19 @@ export function CartDrawer() {
   const { items, removeItem, updateQuantity, isCartOpen, toggleCart, total } = useCart();
   const currentLang = i18n.language;
 
+  // Group items by product ID and sum quantities
+  const groupedItems = Object.values(
+    items.reduce((acc, item) => {
+      const id = item.product.id;
+      if (!acc[id]) {
+        acc[id] = { ...item };
+      } else {
+        acc[id].quantity += item.quantity;
+      }
+      return acc;
+    }, {} as Record<string, typeof items[0]>)
+  );
+
   return (
     <Sheet open={isCartOpen} onOpenChange={toggleCart}>
       <SheetContent className="w-full sm:max-w-lg">
@@ -33,7 +46,7 @@ export function CartDrawer() {
         ) : (
           <div className="flex flex-col h-full">
             <div className="flex-1 overflow-y-auto py-6 space-y-6">
-              {items.map((item) => (
+              {groupedItems.map((item) => (
                 <div key={item.product.id} className="flex gap-4" data-testid={`cart-item-${item.product.id}`}>
                   <img
                     src={item.product.imageUrl}
@@ -47,7 +60,8 @@ export function CartDrawer() {
                     <p className="text-sm text-muted-foreground" data-testid={`text-cart-item-price-${item.product.id}`}>
                       ${item.product.price}
                     </p>
-                    <div className="flex items-center gap-2 mt-2">
+                    <div className="hidden">
+                      {/* flex items-center gap-2 mt-2 */}
                       <Button
                         variant="outline"
                         size="icon"
@@ -67,6 +81,8 @@ export function CartDrawer() {
                       >
                         <Plus className="w-3 h-3" />
                       </Button>
+
+                    </div>
                       <Button
                         variant="ghost"
                         size="icon"
@@ -76,7 +92,6 @@ export function CartDrawer() {
                       >
                         <Trash2 className="w-4 h-4" />
                       </Button>
-                    </div>
                   </div>
                 </div>
               ))}

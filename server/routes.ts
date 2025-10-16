@@ -1,6 +1,11 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
-import { storage } from "./storage";
+import { DbStorage } from "./db/storage";
+import { createCheckoutSession } from "./stripe";
+import { stripeWebhook } from './stripe-webhook';
+import express from 'express';
+
+const storage = new DbStorage();
 import { insertProductSchema, insertOrderSchema } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -157,6 +162,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(400).json({ message: error.message });
     }
   });
+
+  // Stripe Checkout Session endpoint
+  app.post('/api/create-checkout-session', createCheckoutSession);
+
+  // Stripe webhook endpoint (must use raw body)
+  app.post('/api/stripe-webhook', express.raw({ type: 'application/json' }), stripeWebhook);
 
   const httpServer = createServer(app);
 

@@ -18,6 +18,8 @@ import Products from "@/pages/admin/Products";
 import Orders from "@/pages/admin/Orders";
 import NotFound from "@/pages/not-found";
 import "./lib/i18n";
+import CheckoutSuccess from '@/pages/CheckoutSuccess';
+import CheckoutCancel from '@/pages/CheckoutCancel';
 
 function Router() {
   const [location] = useLocation();
@@ -39,15 +41,24 @@ function Router() {
   return (
     <>
       <Header />
-      <Switch>
-        <Route path="/" component={Home} />
-        <Route path="/shop" component={Shop} />
-        <Route path="/about" component={About} />
-        <Route path="/checkout" component={Checkout} />
-        <Route component={NotFound} />
-      </Switch>
-      <Footer />
       <CartDrawer />
+      <TooltipProvider>
+        <ThemeProvider>
+          <QueryClientProvider client={queryClient}>
+            <Switch>
+              <Route path="/" component={Home} />
+              <Route path="/shop" component={Shop} />
+              <Route path="/about" component={About} />
+              <Route path="/checkout" component={Checkout} />
+              <Route path="/checkout/success" component={CheckoutSuccess} />
+              <Route path="/checkout/cancel" component={CheckoutCancel} />
+              <Route component={NotFound} />
+            </Switch>
+            <Toaster />
+          </QueryClientProvider>
+        </ThemeProvider>
+      </TooltipProvider>
+      <Footer />
     </>
   );
 }

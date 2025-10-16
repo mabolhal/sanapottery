@@ -46,7 +46,7 @@ type ProductFormData = {
 export default function Products() {
   const { t } = useTranslation();
   const { toast } = useToast();
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [dialogMode, setDialogMode] = useState<'add' | 'edit' | null>(null);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
 
   const { data: products = [], isLoading } = useQuery<Product[]>({
@@ -77,7 +77,7 @@ export default function Products() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/products'] });
       toast({ title: 'Product created successfully' });
-      setIsDialogOpen(false);
+      setDialogMode(null);
       form.reset();
     },
   });
@@ -90,7 +90,7 @@ export default function Products() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/products'] });
       toast({ title: 'Product updated successfully' });
-      setIsDialogOpen(false);
+      setDialogMode(null);
       setEditingProduct(null);
       form.reset();
     },
@@ -120,7 +120,14 @@ export default function Products() {
     }
   };
 
+  const handleAdd = () => {
+    setDialogMode('add');
+    setEditingProduct(null);
+    form.reset();
+  };
+
   const handleEdit = (product: Product) => {
+    setDialogMode('edit');
     setEditingProduct(product);
     form.reset({
       nameEn: product.nameEn,
@@ -135,11 +142,10 @@ export default function Products() {
       materials: product.materials || '',
       careInstructions: product.careInstructions || '',
     });
-    setIsDialogOpen(true);
   };
 
   const handleDialogClose = () => {
-    setIsDialogOpen(false);
+    setDialogMode(null);
     setEditingProduct(null);
     form.reset();
   };
@@ -148,9 +154,9 @@ export default function Products() {
     <div>
       <div className="flex items-center justify-between mb-8">
         <h1 className="font-serif text-4xl font-light" data-testid="text-products-title">{t('admin.products')}</h1>
-        <Dialog open={isDialogOpen} onOpenChange={handleDialogClose}>
+        <Dialog open={dialogMode !== null} onOpenChange={(open) => !open && handleDialogClose()}>
           <DialogTrigger asChild>
-            <Button data-testid="button-add-product">
+            <Button onClick={handleAdd} data-testid="button-add-product">
               <Plus className="w-4 h-4 mr-2" />
               {t('admin.addProduct')}
             </Button>
@@ -158,7 +164,7 @@ export default function Products() {
           <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>
-                {editingProduct ? t('admin.editProduct') : t('admin.addProduct')}
+                {dialogMode === 'edit' ? t('admin.editProduct') : t('admin.addProduct')}
               </DialogTitle>
             </DialogHeader>
 

@@ -97,7 +97,7 @@ const resources = {
         newsletterText: 'Subscribe to receive updates',
         subscribe: 'Subscribe',
         emailPlaceholder: 'Your email',
-        copyright: '© 2024 Artisan Pottery. All rights reserved.',
+        copyright: '© 2024 Sana Pottery. All rights reserved.',
       },
       common: {
         loading: 'Loading...',

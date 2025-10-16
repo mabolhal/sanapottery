@@ -14,6 +14,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useLocation } from 'wouter';
 import { ArrowLeft } from 'lucide-react';
 import { Link } from 'wouter';
+import { loadStripe } from '@stripe/stripe-js';
 
 const checkoutSchema = z.object({
   customerName: z.string().min(2, 'Name is required'),
@@ -26,6 +27,8 @@ const checkoutSchema = z.object({
 });
 
 type CheckoutForm = z.infer<typeof checkoutSchema>;
+
+const stripePromise = loadStripe('pk_test_51SIrfJ0Owt2HqHqZEAlAEeK75saIMPENwe0Jg0J9WwBDfBj7pazaZ14kafcHY5hQEprkbDGKO1DbjZM302ThIHYo00sKmkp8cp'); // TODO: Replace with your real Stripe publishable key
 
 export default function Checkout() {
   const { t, i18n } = useTranslation();
@@ -47,9 +50,21 @@ export default function Checkout() {
     },
   });
 
-  const createOrderMutation = useMutation({
+  const createCheckoutSessionMutation = useMutation({
     mutationFn: async (data: CheckoutForm) => {
-      const orderItems = items.map(item => ({
+      // Group items by product ID and sum quantities
+      const groupedItems = Object.values(
+        items.reduce((acc, item) => {
+          const id = item.product.id;
+          if (!acc[id]) {
+            acc[id] = { ...item };
+          } else {
+            acc[id].quantity += item.quantity;
+          }
+          return acc;
+        }, {} as Record<string, typeof items[0]>)
+      );
+      const orderItems = groupedItems.map(item => ({
         productId: item.product.id,
         productNameEn: item.product.nameEn,
         productNameFr: item.product.nameFr,
@@ -57,36 +72,53 @@ export default function Checkout() {
         price: item.product.price,
         imageUrl: item.product.imageUrl,
       }));
-
-      const response = await apiRequest('POST', '/api/orders', {
+      console.log('data', data);
+      console.log('orderItems', orderItems);
+      const response = await apiRequest('POST', '/api/create-checkout-session', {
         ...data,
         total: total.toString(),
-        items: JSON.stringify(orderItems),
-        status: 'pending',
+        items: orderItems,
       });
-      
+      if (!response.ok) throw new Error('Failed to create Stripe session');
       return response.json();
     },
-    onSuccess: () => {
-      toast({
-        title: 'Order Placed!',
-        description: 'Thank you for your order. We will contact you soon.',
-      });
-      clearCart();
-      setLocation('/');
+    onSuccess: async (session) => {
+      if (session.url) {
+        window.location.href = session.url;
+      } else {
+        toast({
+          title: 'Error',
+          description: 'Stripe session error. Please try again.',
+          variant: 'destructive',
+        });
+      }
     },
-    onError: () => {
+    onError: (error) => {
+      console.error('Stripe Checkout Error:', error);
       toast({
         title: 'Error',
-        description: 'Failed to place order. Please try again.',
+        description: typeof error === 'object' && error !== null ? (error.message || JSON.stringify(error)) : String(error),
         variant: 'destructive',
       });
     },
   });
 
   const onSubmit = (data: CheckoutForm) => {
-    createOrderMutation.mutate(data);
+    createCheckoutSessionMutation.mutate(data);
   };
+
+  // Group items by product ID and sum quantities
+  const groupedItems = Object.values(
+    items.reduce((acc, item) => {
+      const id = item.product.id;
+      if (!acc[id]) {
+        acc[id] = { ...item };
+      } else {
+        acc[id].quantity += item.quantity;
+      }
+      return acc;
+    }, {} as Record<string, typeof items[0]>)
+  );
 
   if (items.length === 0) {
     return (
@@ -224,10 +256,10 @@ export default function Checkout() {
                   type="submit"
                   size="lg"
                   className="w-full"
-                  disabled={createOrderMutation.isPending}
+                  disabled={createCheckoutSessionMutation.isPending}
                   data-testid="button-complete-order"
                 >
-                  {createOrderMutation.isPending ? t('common.loading') : t('checkout.complete')}
+                  {createCheckoutSessionMutation.isPending ? t('common.loading') : t('checkout.complete')}
                 </Button>
               </form>
             </Form>
@@ -236,7 +268,7 @@ export default function Checkout() {
           <div>
             <h2 className="text-2xl font-medium mb-6">{t('checkout.orderSummary')}</h2>
             <Card className="p-6 space-y-4">
-              {items.map((item) => (
+              {groupedItems.map((item) => (
                 <div key={item.product.id} className="flex gap-4" data-testid={`order-item-${item.product.id}`}>
                   <img
                     src={item.product.imageUrl}

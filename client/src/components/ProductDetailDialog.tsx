@@ -92,8 +92,9 @@ export function ProductDetailDialog({ product, open, onOpenChange }: ProductDeta
               {product.inStock && (
                 <div className="space-y-4">
                   <div className="flex items-center gap-4">
-                    <span className="text-sm font-medium">{t('product.quantity')}:</span>
-                    <div className="flex items-center gap-2">
+                    {/* <span className="text-sm font-medium">{t('product.quantity')}:</span> */}
+                    <div className="hidden">
+                      {/* <div className="flex items-center gap-2"> */}
                       <Button
                         variant="outline"
                         size="icon"
